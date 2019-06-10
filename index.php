@@ -12,8 +12,8 @@ global $PAGE;
 global $DB;
 
 $PAGE->set_url('/local/bulkactions/view.php', array('id' => $cm->id));
-$PAGE->set_title('BulkSections');
-$PAGE->set_heading('BulkSections');
+$PAGE->set_title('Bulk Actions');
+$PAGE->set_heading('Bulk Actions');
 $PAGE->set_pagelayout('standard');
 
 //======================================================================================================================

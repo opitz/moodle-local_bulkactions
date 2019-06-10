@@ -9,6 +9,7 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
 
                     // get the course ID
                     var courseid = $('#courseid').val();
+                    var returnurl = $('#returnurl').val();
                     console.log('course ID = ' + courseid);
 
                     // get the selected command
@@ -23,14 +24,22 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                     sections = JSON.stringify(sections);
                     console.log(sections);
 
+                    var params = '';
+
+                    // check for tab moves and extract the tab nr
+                    if (command.indexOf('move2tab') > -1) {
+                        params = command.substr(command.length -1);
+                        command = 'move2tab';
+                    }
                     // now execute the command with the selected sections
                     $.ajax({
-                        url: "commands/" + command,
+                        url: "execute.php",
                         type: "POST",
-                        data: {'courseid': courseid, 'sections': sections},
+                        data: {'courseid': courseid, 'command': command, 'params': params, 'sections': sections},
                         success: function(result) {
                             if(result !== '') {
                                 console.log('Execution result:\n' + result);
+                                window.location = returnurl;
                             }
                         }
                     });
