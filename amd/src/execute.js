@@ -3,35 +3,42 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
         init: function() {
 
 // ---------------------------------------------------------------------------------------------------------------------
-            var executor = function(returnurl, courseid, command) {
-                // get the selected sections
-                var sections = [];
-                $('input[class="section"]:checked').each(function() {
-                    sections.push($(this).val());
-                    console.log($(this).val());
-                });
-                sections = JSON.stringify(sections);
-                console.log(sections);
-
+            var executor = function(courseid, sections, command, returnurl) {
                 var params = '';
 
-                // check for tab moves and extract the tab nr
-                if (command.indexOf('move2tab') > -1) {
-                    params = command.substr(command.length -1);
-                    command = 'move2tab';
-                }
-                // now execute the command with the selected sections
-                $.ajax({
-                    url: "execute.php",
-                    type: "POST",
-                    data: {'courseid': courseid, 'command': command, 'params': params, 'sections': sections},
-                    success: function(result) {
-                        if(result !== '') {
-                            console.log('Execution result:\n' + result);
-                            window.location = returnurl;
-                        }
+                // check all sections
+                if(command == 'check_all') {
+                    $('input[class="section"]:not(:checked)').each(function() {
+                        $(this).click();
+                    });
+                } else
+
+                // uncheck all sections
+                if(command == 'uncheck_all') {
+                    $('input[class="section"]:checked').each(function() {
+                        $(this).click();
+                    });
+                } else
+                {
+                    // check for tab moves and extract the tab nr
+                    if (command.indexOf('move2tab') > -1) {
+                        params = command.substr(command.length -1);
+                        command = 'move2tab';
                     }
-                });
+                    // now execute the command with the selected sections
+                    $.ajax({
+                        url: "execute.php",
+                        type: "POST",
+                        data: {'courseid': courseid, 'command': command, 'params': params, 'sections': sections},
+                        success: function(result) {
+                            if(result !== '') {
+                                console.log('Execution result:\n' + result);
+                                window.location = returnurl;
+                            }
+                        }
+                    });
+                }
+
             };
 // ---------------------------------------------------------------------------------------------------------------------
             var execute = function() {
@@ -40,33 +47,37 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                     // get the course ID
                     var courseid = $('#courseid').val();
                     var returnurl = $('#returnurl').val();
-                    var commandStr = $(this).html();
+                    var confirm = $(this).attr('confirm_txt');
                     console.log('course ID = ' + courseid);
 
+                    // get the selected sections
+                    var sections = [];
+                    $('input[class="section"]:checked').each(function() {
+                        sections.push($(this).val());
+                        console.log($(this).val());
+                    });
+                    sections = JSON.stringify(sections);
+                    console.log(sections);
+
                     // get the selected command
-//                    var command = $('#command option:selected').val();
                     var command = $(this).attr('value');
-                    if(command === '') {
-                        $('#message').html('Please select an Action');
+                    if(confirm === '') { // no confirmation needed - do it now!
+                        executor(courseid, sections, command, returnurl);
                     } else {
                         var trigger = $('.dropdown-item');
                         ModalFactory.create({
                             title: 'Please confirm',
-                            body: '<p>Do you really want to do this?</p>',
+//                            body: '<p>Do you really want to do this?</p>',
+                            body: '<p>'+confirm+'</p>',
                             type: ModalFactory.types.SAVE_CANCEL,
                         }, trigger)
                             .done(function(modal) {
-                                // Do what you want with your new modal.
                                 modal.getRoot().on(ModalEvents.save, function(e) {
                                     // When modal "Save" button has been pressed.
                                     e.preventDefault();
-                                    console.log('executing now...');
-                                    executor(returnurl, courseid, command);
+                                    executor(courseid, sections, command, returnurl);
                                 });
                             });
-
-
-
                     }
                 });
 
@@ -180,6 +191,28 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
             };
 
 // ---------------------------------------------------------------------------------------------------------------------
+            var checkAll = function() {
+                $("#btn_checkall").on('click', function() {
+//                    $('input[class="section"]').attr('checked', 'checked').removeAttr('id').
+//                    parent().removeAttr('id').parent().removeAttr('id');
+                    $('input[class="section"]:not(:checked)').each(function() {
+                        $(this).click();
+                    });
+                });
+            };
+
+// ---------------------------------------------------------------------------------------------------------------------
+            var uncheckAll = function() {
+                $("#btn_uncheckall").on('click', function() {
+//                    $('input[class="section"]').removeAttr('checked').removeAttr('id').
+//                    parent().removeAttr('id').parent().removeAttr('id');
+                    $('input[class="section"]:checked').each(function() {
+                        $(this).click();
+                    });
+                });
+            };
+
+// ---------------------------------------------------------------------------------------------------------------------
             var droptest = function() {
                 $(".dropdown-item0").on('click', function() {
                     alert($(this).attr('value'));
@@ -212,6 +245,8 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                 // Load all required functions above
                 modaltest();
                 execute();
+                checkAll();
+                uncheckAll();
                 $('.dropdown-toggle').dropdown();
             };
 

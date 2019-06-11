@@ -25,9 +25,6 @@ echo $OUTPUT->header();
 
 require_login();
 if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context)) {
-//if (is_courseadmin()) {
-
-
 
     $fo_records = $DB->get_records('course_format_options', array('courseid' => $courseid));
     $fo = array();
@@ -41,15 +38,23 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
     // build the commands array
     $commands = array();
 //    $commands['Please select an action'] = '';
+    $commands[] = (object)array('command' => 'check_all', 'name' => 'Check All', 'confirm' => '');
+    $commands[] = (object)array('command' => 'uncheck_all', 'name' => 'Uncheck All', 'confirm' => '');
+    $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
 
     $maxtabs = (int)$fo['maxtabs'];
 // tab commands
     for($i = 0; $i <= $maxtabs; $i++) {
-        $commands['Move to Tab '.$i] = 'move2tab'.$i;
+        $command = new stdClass();
+        $command->command = 'move2tab'.$i;
+        $command->name = 'Move to Tab '.$i;
+        $command->confirm = 'Do you really want to move the selected sections to Tab '.$i.'?';
+        $commands[] = $command;
     }
 
-    $commands['Hide sections'] = 'hide_sections';
-    $commands['Show sections'] = 'show_sections';
+    $commands[] = (object)array('command' => 'hide_sections', 'name' => 'Hide sections', 'confirm' => 'Do you really want to hide the selected sections?');
+    $commands[] = (object)array('command' => 'show_sections', 'name' => 'Show sections', 'confirm' => 'Do you really want to reveal the selected sections?');
+    $commands[] = (object)array('command' => 'delete_sections', 'name' => 'Delete sections', 'confirm' => 'Do you really want to delete the selected sections? <br><b>This cannot be undone!!</b>');
 
     $returnurl = $_SERVER['HTTP_REFERER'];
 
@@ -58,13 +63,17 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo "<input id='courseid' type='text' value='$courseid' style='display:none;'>";
         echo "<input id='returnurl' type='text' value='$returnurl' style='display:none;'>";
 
-        echo html_writer::start_tag('button', array('type' => 'button', 'id'=>'command', 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown'));
+        echo html_writer::start_tag('button', array('type' => 'button', 'id'=>'command', 'class' => 'btn dropdown-toggle btn-primary', 'data-toggle' => 'dropdown'));
         echo "Select Action";
         echo html_writer::end_tag('button');
 
         echo html_writer::start_tag('div', array('class' => 'dropdown-menu'));
-        foreach($commands as $key => $command) {
-            echo html_writer::tag('a', $key, array('class' => 'dropdown-item','value' => $command));
+        foreach($commands as $command) {
+            if($command->command == 'dropdown-divider') {
+                echo html_writer::tag('div', $command->name, array('class' => 'dropdown-divider'));
+            } else {
+                echo html_writer::tag('a', $command->name, array('class' => 'dropdown-item','value' => $command->command, 'confirm_txt' => $command->confirm));
+            }
 //            "<option value='".$command."'>$key</option>";
         }
         echo html_writer::end_tag('div');
@@ -72,23 +81,18 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo ' ';
         echo '<input id="btn_cancel" class="btn" type="button" value="Cancel">';
 
-        echo ' ';
-        echo '<input id="btn_test" class="btn" type="button" value="Test">';
+//        echo ' ';
+//        echo '<input id="btn_checkall" class="btn" type="button" value="Check All">';
 
-        /*
-                echo "<select id='command' class='form-control0' type='button' name='command'>";
-                foreach($commands as $key => $command) {
-                    echo "<option value='".$command."'>$key</option>";
-                }
-                echo "</select>";
-                echo "<div id='message'></div><hr>";
-        */
+//        echo ' ';
+//        echo '<input id="btn_uncheckall" class="btn" type="button" value="Uncheck All">';
+
+//        echo ' ';
+//        echo '<input id="btn_test" class="btn" type="button" value="Test">';
 
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
         $sql = "select * from {course_format_options} where courseid = $courseid and name like 'tab_'";
         $cfos = $DB->get_records_sql($sql);
-
-//        echo html_writer::start_tag('div', array('class' => 'container-fluid'));
 
         echo html_writer::start_tag('table',array('class' => 'table table-striped ', 'border' => '0'));
         echo html_writer::start_tag('thead');
@@ -116,7 +120,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             $hidinghint = ($section->visible ? '' : ' (<i>hidden</i>)');
             $tablocation = '';
             foreach($cfos as $cfo){
-                if(strstr($cfo->value, $section->id)){
+                if(in_array($section->id, explode(',',$cfo->value))){
                     $tablocation = "Tab ".substr($cfo->name, -1)." ";
                     break;
                 }
@@ -137,25 +141,12 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             echo $hidinghint;
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
-
-//            echo '<input type="checkbox" class="section" value="'.$section->id.'" name="'.$section->section.'"> '.$sectionname.$hidinghint.$tablocation.'</input><br>';
         }
 
         echo html_writer::end_tag('tbody');
         echo html_writer::end_tag('table');
 
-//        echo html_writer::end_tag('div');
-
         echo "<br>";
-//        echo html_writer::start_tag('button', array('id' => 'btn_execute', 'class' => 'btn'));
-//        echo "Execute";
-//        echo html_writer::end_tag('button');
-//        echo '<input id="btn_execute" class="btn" type="button" value="Execute">';
-//        echo ' ';
-//        echo html_writer::start_tag('button', array('id' => 'btn_cancel', 'class' => 'btn'));
-//        echo "Cancel";
-//        echo html_writer::end_tag('button');
-//        echo '<input id="btn_cancel" class="btn" type="button" value="Cancel">';
     }
     echo "</form>";
 
