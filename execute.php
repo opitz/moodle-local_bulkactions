@@ -9,24 +9,26 @@ $sectionids = $_POST['sections'];
 
 $o = '';
 $sections = $DB->get_records_list('course_sections', 'id', json_decode($sectionids));
-if($sections) {
+if($command) {
     $o .= "Command: $command\n";
 
     switch ($command) {
         case 'show_sections' :
-            $o .= show_sections($courseid, $sections);
+            $o .= show_sections($sections);
             break;
         case 'hide_sections' :
-            $o .= hide_sections($courseid, $sections);
-            break;
+            $o .= hide_sections($sections);
         case 'move2tab' :
             $o .= move2tab($params, $sections);
             break;
         case 'delete_sections' :
-            $o .= delete_sections($courseid, $sections);
+            $o .= delete_sections($sections);
+            break;
+        case 'delete_empty_sections' :
+            $o .= delete_empty_sections($courseid);
             break;
         case 'test_sections' :
-            $o .= test_sections($courseid, $sections);
+            $o .= test_sections($sections);
             break;
     }
     rebuild_course_cache($courseid, true); // rebuild the cache for that course so the changes become effective
@@ -34,7 +36,7 @@ if($sections) {
 echo $o;
 
 //----------------------------------------------------------------------------------------------------------------------
-function show_sections($courseid, $sections) {
+function show_sections($sections) {
     global $DB;
     $o = '';
     $o .= "show_sections\n";
@@ -48,7 +50,7 @@ function show_sections($courseid, $sections) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-function hide_sections($courseid, $sections) {
+function hide_sections($sections) {
     global $DB;
     $o = '';
     $o .= "hide_sections\n";
@@ -74,80 +76,9 @@ function move2tab($tab_nr, $sections) {
 
     return $o;
 }
-function move2tab0($tab_nr, $sections) {
-    global $DB;
-    $o = '';
-    $o .= "Moving to Tab $tab_nr\n";
-
-    $courseid = $sections[key($sections)]->course; // it doesn't matter at which key the pointer is as all sections share the same course...
-
-    // remove sectionIDs and section numbers from any tab
-    $sql = "select * from {course_format_options} where courseid = $courseid and (name like 'tab_' or name like 'tab%sectionnums')";
-    $cfos = $DB->get_records_sql($sql);
-    foreach($cfos as $cfo) {
-        $has_changed = false;
-        if($cfo->value != '') { // only check non empty tab values
-            foreach($sections as $section) {
-                if(strstr($cfo->name, 'sectionnums')) {
-                    if(in_array($section->section, explode(',',$cfo->value))) {
-                        $cfo->value = str_replace($section->section.',','', $cfo->value);
-                        $cfo->value = str_replace(','.$section->section,'', $cfo->value);
-                        $cfo->value = str_replace($section->section,'', $cfo->value);
-                        $has_changed = true;
-                    }
-                } else {
-                    if(in_array($section->id, explode(',',$cfo->value))) {
-                        $cfo->value = str_replace($section->id.',','', $cfo->value);
-                        $cfo->value = str_replace(','.$section->id,'', $cfo->value);
-                        $cfo->value = str_replace($section->id,'', $cfo->value);
-                        $has_changed = true;
-                    }
-                }
-            }
-            if($has_changed) {
-                $DB->update_record('course_format_options', $cfo);
-            }
-        }
-    }
-
-    // now add the sections to the destination tab - if it is NOT Tab 0
-    if($tab_nr > 0){
-        // compile strings
-        $new_ids = ''; $new_nums = '';
-        foreach($sections as $section) {
-            if($new_ids == ''){
-                $new_ids = $section->id;
-                $new_nums = $section->section;
-            } else {
-                $new_ids .= ','.$section->id;
-                $new_nums .= ','.$section->section;
-            }
-
-        }
-
-        $tabid_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr));
-        $tabnum_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr.'_sectionnums'));
-
-        if($tabid_rec->value == '') {
-            $tabid_rec->value = $new_ids;
-        } else {
-            $tabid_rec->value .= ','.$new_ids;
-        }
-
-        if($tabnum_rec->value == '') {
-            $tabnum_rec->value = $new_nums;
-        } else {
-            $tabnum_rec->value .= ','.$new_nums;
-        }
-
-        $DB->update_record('course_format_options', $tabid_rec);
-        $DB->update_record('course_format_options', $tabnum_rec);
-    }
-    return $o;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
-function test_sections($courseid, $sections) {
+function test_sections($sections) {
     $o = '';
     $o .= "test_sections here!\n";
     foreach($sections as $section){
@@ -232,10 +163,27 @@ function removefromtabs($courseid, $sections) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-function delete_sections($courseid, $sections) {
+function delete_sections($sections) {
     global $DB;
     $o = '';
     $o .= "delete_sections\n";
+    $courseid = $sections[key($sections)]->course; // it doesn't matter at which key the pointer is as all sections share the same course...
+    removefromtabs($courseid, $sections);
+    foreach($sections as $section){
+        $DB->delete_records('course_sections', array('id' => $section->id));
+        $o .= "Section Nr $section->section (ID = $section->id) was deleted\n";
+    }
+
+    return $o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+function delete_empty_sections($courseid) {
+    global $DB;
+    $o = '';
+    $o .= "delete_empty_sections\n";
+    $sql = "select * from {course_sections} where course = $courseid and section != 0 and (name is null or name ='') and summary = '' and sequence = ''";
+    $sections = $DB->get_records_sql($sql);
     removefromtabs($courseid, $sections);
     foreach($sections as $section){
         $DB->delete_records('course_sections', array('id' => $section->id));

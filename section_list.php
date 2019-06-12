@@ -14,7 +14,7 @@ $courseid = $_GET['courseid'];
 $context = context_course::instance($courseid);
 $course = $DB->get_record('course', array('id' => $courseid));
 
-$PAGE->set_url('/local/bulkactions/view.php', array('id' => $cm->id));
+$PAGE->set_url('/local/bulkactions/view.php', array('id' => $courseid));
 $PAGE->set_title($course->fullname.' - Bulk Actions');
 $PAGE->set_heading($course->fullname.' - Bulk Actions');
 $PAGE->set_pagelayout('standard');
@@ -38,23 +38,33 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
     // build the commands array
     $commands = array();
 //    $commands['Please select an action'] = '';
-    $commands[] = (object)array('command' => 'check_all', 'name' => get_string('check_all', 'local_bulkactions'), 'confirm' => '');
-    $commands[] = (object)array('command' => 'uncheck_all', 'name' => get_string('uncheck_all', 'local_bulkactions'), 'confirm' => '');
+    $commands[] = (object)array('command' => 'check_all', 'name' => get_string('check_all', 'local_bulkactions'), 'confirm' => '', 'nosectioncheck' => true);
+    $commands[] = (object)array('command' => 'uncheck_all', 'name' => get_string('uncheck_all', 'local_bulkactions'), 'confirm' => '', 'nosectioncheck' => true);
     $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
 
     $maxtabs = (int)$fo['maxtabs'];
+    if($maxtabs > 0) {
 // tab commands
-    for($i = 0; $i <= $maxtabs; $i++) {
-        $command = new stdClass();
-        $command->command = 'move2tab'.$i;
-        $command->name = get_string('move_tab', 'local_bulkactions', format_string($i));
-        $command->confirm = get_string('move_tab_confirm', 'local_bulkactions', format_string($i));
-        $commands[] = $command;
+        for($i = 0; $i <= $maxtabs; $i++) {
+            $command = new stdClass();
+            $command->command = 'move2tab'.$i;
+            $command->name = get_string('move_tab', 'local_bulkactions', format_string($i));
+            $command->confirm = get_string('move_tab_confirm', 'local_bulkactions', format_string($i));
+            $commands[] = $command;
+        }
     }
 
     $commands[] = (object)array('command' => 'hide_sections', 'name' => get_string('hide_sections', 'local_bulkactions'), 'confirm' => get_string('hide_sections_confirm', 'local_bulkactions'));
     $commands[] = (object)array('command' => 'show_sections', 'name' => get_string('show_sections', 'local_bulkactions'), 'confirm' => get_string('show_sections_confirm', 'local_bulkactions'));
     $commands[] = (object)array('command' => 'delete_sections', 'name' => get_string('delete_sections', 'local_bulkactions'), 'confirm' => get_string('delete_sections_confirm', 'local_bulkactions'));
+    $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
+    $commands[] = (object)array(
+        'command' => 'delete_empty_sections',
+        'name' => get_string('delete_empty_sections', 'local_bulkactions'),
+        'confirm' => get_string('delete_empty_sections_confirm', 'local_bulkactions'),
+        'nosectioncheck' => true,
+//        'styleclass' => 'warning'
+    );
 
     $returnurl = $_SERVER['HTTP_REFERER'];
 
@@ -72,7 +82,11 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             if($command->command == 'dropdown-divider') {
                 echo html_writer::tag('div', $command->name, array('class' => 'dropdown-divider'));
             } else {
-                echo html_writer::tag('a', $command->name, array('class' => 'dropdown-item','value' => $command->command, 'confirm_txt' => $command->confirm));
+                echo html_writer::tag('a', $command->name, array(
+                    'class' => 'dropdown-item bold'.(isset($command->styleclass) ? ' '.$command->styleclass : ''),
+                    'value' => $command->command, 'confirm_txt' => $command->confirm,
+                    'no_section_check' => (isset($command->nosectioncheck) ? $command->nosectioncheck : '')
+                ));
             }
         }
         echo html_writer::end_tag('div');

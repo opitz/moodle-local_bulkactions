@@ -21,8 +21,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $plugin = new \stdClass();
-$plugin->version    = 2019020100;
+$plugin->version    = 2019061200;
 $plugin->requires  = 2017050500; // Moodle 3.3
 $plugin->component  = 'local_bulkactions'; // Full name of the plugin (used for diagnostics)
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->cron = 0 ; // not used
