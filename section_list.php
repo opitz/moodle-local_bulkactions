@@ -32,14 +32,14 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         $fo[$for->name] = $for->value;
     }
 
-    echo html_writer::tag('div','Check the topics you want the activity to apply to. Then select an action from the drop down menu.');
+    echo html_writer::tag('div',get_string('instructions', 'local_bulkactions'));
     echo html_writer::empty_tag('br');
 
     // build the commands array
     $commands = array();
 //    $commands['Please select an action'] = '';
-    $commands[] = (object)array('command' => 'check_all', 'name' => 'Check All', 'confirm' => '');
-    $commands[] = (object)array('command' => 'uncheck_all', 'name' => 'Uncheck All', 'confirm' => '');
+    $commands[] = (object)array('command' => 'check_all', 'name' => get_string('check_all', 'local_bulkactions'), 'confirm' => '');
+    $commands[] = (object)array('command' => 'uncheck_all', 'name' => get_string('uncheck_all', 'local_bulkactions'), 'confirm' => '');
     $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
 
     $maxtabs = (int)$fo['maxtabs'];
@@ -47,14 +47,14 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
     for($i = 0; $i <= $maxtabs; $i++) {
         $command = new stdClass();
         $command->command = 'move2tab'.$i;
-        $command->name = 'Move to Tab '.$i;
-        $command->confirm = 'Do you really want to move the selected sections to Tab '.$i.'?';
+        $command->name = get_string('move_tab', 'local_bulkactions', format_string($i));
+        $command->confirm = get_string('move_tab_confirm', 'local_bulkactions', format_string($i));
         $commands[] = $command;
     }
 
-    $commands[] = (object)array('command' => 'hide_sections', 'name' => 'Hide sections', 'confirm' => 'Do you really want to hide the selected sections?');
-    $commands[] = (object)array('command' => 'show_sections', 'name' => 'Show sections', 'confirm' => 'Do you really want to reveal the selected sections?');
-    $commands[] = (object)array('command' => 'delete_sections', 'name' => 'Delete sections', 'confirm' => 'Do you really want to delete the selected sections? <br><b>This cannot be undone!!</b>');
+    $commands[] = (object)array('command' => 'hide_sections', 'name' => get_string('hide_sections', 'local_bulkactions'), 'confirm' => get_string('hide_sections_confirm', 'local_bulkactions'));
+    $commands[] = (object)array('command' => 'show_sections', 'name' => get_string('show_sections', 'local_bulkactions'), 'confirm' => get_string('show_sections_confirm', 'local_bulkactions'));
+    $commands[] = (object)array('command' => 'delete_sections', 'name' => get_string('delete_sections', 'local_bulkactions'), 'confirm' => get_string('delete_sections_confirm', 'local_bulkactions'));
 
     $returnurl = $_SERVER['HTTP_REFERER'];
 
@@ -64,7 +64,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo "<input id='returnurl' type='text' value='$returnurl' style='display:none;'>";
 
         echo html_writer::start_tag('button', array('type' => 'button', 'id'=>'command', 'class' => 'btn dropdown-toggle btn-primary', 'data-toggle' => 'dropdown'));
-        echo "Select Action";
+        echo get_string('select_action', 'local_bulkactions');
         echo html_writer::end_tag('button');
 
         echo html_writer::start_tag('div', array('class' => 'dropdown-menu'));
@@ -74,21 +74,11 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             } else {
                 echo html_writer::tag('a', $command->name, array('class' => 'dropdown-item','value' => $command->command, 'confirm_txt' => $command->confirm));
             }
-//            "<option value='".$command."'>$key</option>";
         }
         echo html_writer::end_tag('div');
 
         echo ' ';
         echo '<input id="btn_cancel" class="btn" type="button" value="Cancel">';
-
-//        echo ' ';
-//        echo '<input id="btn_checkall" class="btn" type="button" value="Check All">';
-
-//        echo ' ';
-//        echo '<input id="btn_uncheckall" class="btn" type="button" value="Uncheck All">';
-
-//        echo ' ';
-//        echo '<input id="btn_test" class="btn" type="button" value="Test">';
 
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
         $sql = "select * from {course_format_options} where courseid = $courseid and name like 'tab_'";
@@ -99,16 +89,16 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo html_writer::start_tag('tr');
 
         echo html_writer::start_tag('th');
-        echo "Apply";
+        echo get_string('checkbox_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
         echo html_writer::start_tag('th');
-        echo "Topic";
+        echo get_string('section_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
         echo html_writer::start_tag('th');
-        echo "Tab Position";
+        echo get_string('tab_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
         echo html_writer::start_tag('th');
-        echo "Visibility";
+        echo get_string('visib_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
 
         echo html_writer::end_tag('tr');
@@ -116,8 +106,8 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo html_writer::start_tag('tbody');
 
         foreach($sections as $section){
-            $sectionname = ($section->name == '' ? 'Section '.$section->section : $section->name);
-            $hidinghint = ($section->visible ? '' : ' (<i>hidden</i>)');
+            $sectionname = ($section->name == '' ? get_string('section_name', 'local_bulkactions').$section->section : $section->name);
+            $hidinghint = ($section->visible ? '' : get_string('hidden_hint', 'local_bulkactions'));
             $tablocation = '';
             foreach($cfos as $cfo){
                 if(in_array($section->id, explode(',',$cfo->value))){
@@ -151,7 +141,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
     echo "</form>";
 
 } else {
-    echo(get_string('login_required', 'local_pluginmeta'));
+    echo(get_string('login_required', 'local_bulkactions'));
 }
 
 echo $OUTPUT->footer();
