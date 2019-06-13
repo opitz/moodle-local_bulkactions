@@ -86,20 +86,20 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                         if(confirm === '' || confirm === false) { // No confirmation needed - do it now!
                             executor(courseid, sections, command, returnurl);
                         } else {
-                            var trigger = $('.dropdown-item');
                             ModalFactory.create({
                                 title: 'Please confirm',
                                 body: '<p>'+confirm+'</p>',
                                 type: ModalFactory.types.SAVE_CANCEL,
-                            }, trigger)
-                                .done(function(modal) {
-                                    console.log(modal);
-                                    modal.getRoot().on(ModalEvents.save, function(e) {
-                                        // When modal "Save" button has been pressed.
-                                        e.preventDefault();
-                                        executor(courseid, sections, command, returnurl);
-                                    });
+                            })
+                            .done(function(modal) {
+                                modal.show();
+                                console.log(modal);
+                                modal.getRoot().on(ModalEvents.save, function(e) {
+                                    // When modal "Save" button has been pressed.
+                                    e.preventDefault();
+                                    executor(courseid, sections, command, returnurl);
                                 });
+                            });
                         }
                     }
                 });
