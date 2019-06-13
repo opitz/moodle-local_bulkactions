@@ -58,12 +58,14 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                     var confirm = $(this).attr('confirm_txt');
                     var nosectioncheck = $(this).attr('no_section_check'); // If set do not check for selected sections
                     console.log('course ID = ' + courseid);
+                    console.log('command = ' + command);
+                    console.log('confirmation = ' + confirm);
 
                     // Get the selected sections
                     var sections = [];
                     $('input[class="section"]:checked').each(function() {
                         sections.push($(this).val());
-                        console.log($(this).val());
+                        console.log('=> section checked: '+$(this).val());
                     });
                     if (sections.length === 0 && nosectioncheck !== '1') {
                         ModalFactory.create({
