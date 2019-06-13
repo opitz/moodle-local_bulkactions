@@ -32,5 +32,6 @@ $string['section_header'] = 'Topic';
 $string['tab_header'] = 'Tab Position';
 $string['visib_header'] = 'Visibility';
 $string['hidden_hint'] = '<i>hidden</i>';
+$string['section0_name'] = 'General';
 $string['section_name'] = 'Topic ';
 $string['gnupf'] = 'Gnupf';

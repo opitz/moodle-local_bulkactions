@@ -85,7 +85,8 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             } else {
                 echo html_writer::tag('a', $command->name, array(
                     'class' => 'dropdown-item'.(isset($command->styleclass) ? ' '.$command->styleclass : ''),
-                    'value' => $command->command, 'confirm_txt' => $command->confirm,
+                    'value' => $command->command,
+                    'confirm_txt' => $command->confirm,
                     'no_section_check' => (isset($command->nosectioncheck) ? $command->nosectioncheck : '')
                 ));
             }
@@ -121,7 +122,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo html_writer::start_tag('tbody');
 
         foreach($sections as $section){
-            $sectionname = ($section->name == '' ? get_string('section_name', 'local_bulkactions').$section->section : $section->name);
+            $sectionname = ($section->name == '' ? ($section->section === 0 ? get_string('section0_name', 'local_bulkactions') : get_string('section_name', 'local_bulkactions').$section->section) : $section->name);
             $hidinghint = ($section->visible ? '' : get_string('hidden_hint', 'local_bulkactions'));
             $tablocation = '';
             foreach($cfos as $cfo){
@@ -133,7 +134,6 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
 
             echo html_writer::start_tag('tr');
             echo html_writer::start_tag('td');
-//            echo html_writer::tag('input', array('type' => 'checkbox', 'class' => 'section', 'value' => $section->id, 'name' => $section->section));
             echo '<input type="checkbox" class="section" value="'.$section->id.'" name="'.$section->section.'"> ';
             echo html_writer::end_tag('td');
             echo html_writer::start_tag('td');
