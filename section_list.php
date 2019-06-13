@@ -122,7 +122,10 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo html_writer::start_tag('tbody');
 
         foreach($sections as $section){
-            $sectionname = ($section->name == '' ? ($section->section === 0 ? get_string('section0_name', 'local_bulkactions') : get_string('section_name', 'local_bulkactions').$section->section) : $section->name);
+            // excluding section 0 from bulk actions
+            if($section->section == 0) continue;
+
+            $sectionname = ($section->name == '' ? ($section->section == 0 ? get_string('section0_name', 'local_bulkactions') : get_string('section_name', 'local_bulkactions').$section->section) : $section->name);
             $hidinghint = ($section->visible ? '' : get_string('hidden_hint', 'local_bulkactions'));
             $tablocation = '';
             foreach($cfos as $cfo){
