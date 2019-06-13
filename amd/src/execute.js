@@ -90,10 +90,8 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                                 body: '<p>'+confirm+'</p>',
                                 type: ModalFactory.types.SAVE_CANCEL,
                             }, trigger)
-                                .then(function(modal) {
-                                    modal.setSaveButtonText('OK');
-                                })
                                 .done(function(modal) {
+                                    console.log(modal);
                                     modal.getRoot().on(ModalEvents.save, function(e) {
                                         // When modal "Save" button has been pressed.
                                         e.preventDefault();
@@ -134,7 +132,7 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                 execute();
                 checkAll();
                 uncheckAll();
-                $('.dropdown-toggle').dropdown();
+//                $('.dropdown-toggle').dropdown();
             };
 
 // ---------------------------------------------------------------------------------------------------------------------
