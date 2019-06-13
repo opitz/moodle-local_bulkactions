@@ -63,6 +63,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         'name' => get_string('delete_empty_sections', 'local_bulkactions'),
         'confirm' => get_string('delete_empty_sections_confirm', 'local_bulkactions'),
         'nosectioncheck' => true,
+//        'styleclass' => 'bold'
 //        'styleclass' => 'warning'
     );
 
@@ -83,7 +84,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
                 echo html_writer::tag('div', $command->name, array('class' => 'dropdown-divider'));
             } else {
                 echo html_writer::tag('a', $command->name, array(
-                    'class' => 'dropdown-item bold'.(isset($command->styleclass) ? ' '.$command->styleclass : ''),
+                    'class' => 'dropdown-item'.(isset($command->styleclass) ? ' '.$command->styleclass : ''),
                     'value' => $command->command, 'confirm_txt' => $command->confirm,
                     'no_section_check' => (isset($command->nosectioncheck) ? $command->nosectioncheck : '')
                 ));
