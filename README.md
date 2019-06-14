@@ -18,6 +18,6 @@ If the "topics2" course format is used additional sctions are available:
 The plugin will install a menu entry in the course admin menu. The user needs to be allowed to update a course and the course needs to be in edit mode to see the menu entry and use the options. 
  
  ----
- v.0.8
+ v.1.0
  
 
