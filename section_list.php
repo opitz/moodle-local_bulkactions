@@ -48,7 +48,9 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         for($i = 0; $i <= $maxtabs; $i++) {
             $command = new stdClass();
             $command->command = 'move2tab'.$i;
-            $command->name = get_string('move_tab', 'local_bulkactions', format_string($i));
+//            $command->name = get_string('move_tab', 'local_bulkactions', format_string($i));
+//            $command->name = get_string('move_tab', 'local_bulkactions', $fo['tab'.$i.'_title'].($fo['tab'.$i.'_title'] != "Tab $i" ? " (Tab $i)" : ''));
+            $command->name = get_string('move_tab', 'local_bulkactions', ($fo['tab'.$i.'_title'] == "Tab $i" ? $i :  '"'.$fo['tab'.$i.'_title'].'"').($fo['tab'.$i.'_title'] != "Tab $i" && $i>0 ? " (Tab $i)" : ''));
             $command->confirm = get_string('move_tab_confirm', 'local_bulkactions', format_string($i));
             $commands[] = $command;
         }
@@ -74,6 +76,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo "<input id='courseid' type='text' value='$courseid' style='display:none;'>";
         echo "<input id='returnurl' type='text' value='$returnurl' style='display:none;'>";
 
+        // the action menu
         echo html_writer::start_tag('button', array('type' => 'button', 'id'=>'command', 'class' => 'btn dropdown-toggle btn-primary', 'data-toggle' => 'dropdown'));
         echo get_string('select_action', 'local_bulkactions');
         echo html_writer::end_tag('button');
@@ -96,6 +99,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         echo ' ';
         echo '<input id="btn_cancel" class="btn" type="button" value="Cancel">';
 
+        // the section list
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
         $sql = "select * from {course_format_options} where courseid = $courseid and name like 'tab_'";
         $cfos = $DB->get_records_sql($sql);
@@ -130,9 +134,12 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             $tablocation = '';
             foreach($cfos as $cfo){
                 if(in_array($section->id, explode(',',$cfo->value))){
-                    $tablocation = "Tab ".substr($cfo->name, -1)." ";
+                    $i = (int)substr($cfo->name, -1);
+//                    $tablocation = "Tab ".substr($cfo->name, -1)." ";
+                    $tablocation = $fo['tab'.$i.'_title'].($fo['tab'.$i.'_title'] != "Tab $i" && $i>-1 ? " (Tab $i)" : '');
                     break;
                 }
+                $tablocation = $fo['tab0_title'];
             }
 
             echo html_writer::start_tag('tr');
