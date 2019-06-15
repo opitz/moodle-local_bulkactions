@@ -42,7 +42,11 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
     $commands[] = (object)array('command' => 'uncheck_all', 'name' => get_string('uncheck_all', 'local_bulkactions'), 'confirm' => '', 'nosectioncheck' => true);
     $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
 
-    $maxtabs = ((isset($fo['maxtabs']) && (int)$fo['maxtabs'] > 0) ? (int)$fo['maxtabs'] : (isset($CFG->max_tabs) ? $CFG->max_tabs : 5));
+    if(isset($fo['tab1'])) {
+        $maxtabs = ((isset($fo['maxtabs']) && (int)$fo['maxtabs'] > 0) ? (int)$fo['maxtabs'] : (isset($CFG->max_tabs) ? $CFG->max_tabs : 5));
+    } else {
+        $maxtabs = 0;
+    }
     if($maxtabs > 0) {
 // tab commands
         for($i = 0; $i <= $maxtabs; $i++) {

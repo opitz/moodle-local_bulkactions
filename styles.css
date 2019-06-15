@@ -5,3 +5,7 @@ a.warning {
 a.highlight {
     background-color: #fcfcfc;
 }
+
+.dropdown-item {
+    cursor: pointer;
+}
