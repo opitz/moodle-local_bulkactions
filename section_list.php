@@ -105,7 +105,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
 
         // the section list
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
-        $sql = "select * from {course_format_options} where courseid = $courseid and name like 'tab_'";
+        $sql = "select * from {course_format_options} where courseid = $courseid and (name like 'tab_' or name like 'tab__')";
         $cfos = $DB->get_records_sql($sql);
 
         echo html_writer::start_tag('table',array('class' => 'table table-striped ', 'border' => '0'));
@@ -138,8 +138,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             $tablocation = '';
             foreach($cfos as $cfo){
                 if(in_array($section->id, explode(',',$cfo->value))){
-                    $i = (int)substr($cfo->name, -1);
-//                    $tablocation = "Tab ".substr($cfo->name, -1)." ";
+                    $i = (int)substr($cfo->name, 3);
                     $tablocation = $fo['tab'.$i.'_title'].($fo['tab'.$i.'_title'] != "Tab $i" && $i>-1 ? " (Tab $i)" : '');
                     break;
                 }
