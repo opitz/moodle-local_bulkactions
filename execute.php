@@ -4,7 +4,7 @@ include_once ('../../course/lib.php');
 
 $courseid = $_POST['courseid'];
 $command = $_POST['command'];
-$params = $_POST['params'];
+$param = $_POST['param'];
 $sectionids = $_POST['sections'];
 
 $o = '';
@@ -19,7 +19,7 @@ if($command) {
         case 'hide_sections' :
             $o .= hide_sections($sections);
         case 'move2tab' :
-            $o .= move2tab($params, $sections);
+            $o .= move2tab($param, $sections);
             break;
         case 'delete_sections' :
             $o .= delete_sections($sections);
@@ -92,7 +92,70 @@ function test_sections($sections) {
 //----------------------------------------------------------------------------------------------------------------------
 // move section ID and section number to tab format settings of a given tab
 function add2tab($courseid, $sections, $tab_nr) {
-    global $DB;
+    global $COURSE, $DB;
+
+    // now add the sections to the destination tab - if it is NOT Tab 0
+    if($tab_nr > 0){
+        // compile strings
+        $new_ids = ''; $new_nums = '';
+        foreach($sections as $section) {
+            if($new_ids == ''){
+                $new_ids = $section->id;
+                $new_nums = $section->section;
+            } else {
+                $new_ids .= ','.$section->id;
+                $new_nums .= ','.$section->section;
+            }
+        }
+
+        $fo = $DB->get_record('course_format_options', array('courseid' => $courseid));
+
+//        $fo = $DB->get_records('course_format_options', array('courseid' => $courseid));
+//        $format_options = array();
+//        foreach($fo as $o) {
+//            $format_options[$o->name] = $o->value;
+//        }
+
+        $tabid_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr));
+        $tabnum_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr.'_sectionnums'));
+        if($tabid_rec) {
+
+            if($tabid_rec->value == '') {
+                $tabid_rec->value = $new_ids;
+            } else {
+                $tabid_rec->value .= ','.$new_ids;
+            }
+            $DB->update_record('course_format_options', $tabid_rec);
+        } else {
+            $tabid_rec = new stdClass();
+            $tabid_rec->courseid = $courseid;
+            $tabid_rec->format = $fo->format;
+            $tabid_rec->section = 0;
+            $tabid_rec->name = 'tab'.$tab_nr;
+            $tabid_rec->value = $new_ids;
+            $DB->insert_record('course_format_options', $tabid_rec);
+        }
+
+        if($tabnum_rec) {
+            if($tabnum_rec->value == '') {
+                $tabnum_rec->value = $new_nums;
+            } else {
+                $tabnum_rec->value .= ','.$new_nums;
+            }
+            $DB->update_record('course_format_options', $tabnum_rec);
+        } else {
+            $tabnum_rec = new stdClass();
+            $tabnum_rec->courseid = $courseid;
+            $tabnum_rec->format = $fo->format;
+            $tabnum_rec->section = 0;
+            $tabnum_rec->name = 'tab'.$tab_nr.'_sectionnums';
+            $tabnum_rec->value = $new_nums;
+            $DB->insert_record('course_format_options', $tabnum_rec);
+        }
+    }
+}
+function add2tab0($courseid, $sections, $tab_nr) {
+    global $COURSE, $DB;
 
     // now add the sections to the destination tab - if it is NOT Tab 0
     if($tab_nr > 0){
@@ -110,21 +173,28 @@ function add2tab($courseid, $sections, $tab_nr) {
 
         $tabid_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr));
         $tabnum_rec = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'tab'.$tab_nr.'_sectionnums'));
+        if($tabid_rec) {
 
-        if($tabid_rec->value == '') {
-            $tabid_rec->value = $new_ids;
+            if($tabid_rec->value == '') {
+                $tabid_rec->value = $new_ids;
+            } else {
+                $tabid_rec->value .= ','.$new_ids;
+            }
+            $DB->update_record('course_format_options', $tabid_rec);
         } else {
-            $tabid_rec->value .= ','.$new_ids;
+            $tabid_rec = new stdClass();
+            $tabid_rec->courseid = $courseid;
+            $tabid_rec->name = 'tab'.$tab_nr;
         }
 
-        if($tabnum_rec->value == '') {
-            $tabnum_rec->value = $new_nums;
-        } else {
-            $tabnum_rec->value .= ','.$new_nums;
+        if($tabnum_rec) {
+            if($tabnum_rec->value == '') {
+                $tabnum_rec->value = $new_nums;
+            } else {
+                $tabnum_rec->value .= ','.$new_nums;
+            }
+            $DB->update_record('course_format_options', $tabnum_rec);
         }
-
-        $DB->update_record('course_format_options', $tabid_rec);
-        $DB->update_record('course_format_options', $tabnum_rec);
     }
 }
 

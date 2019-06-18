@@ -4,7 +4,7 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
 
 // ---------------------------------------------------------------------------------------------------------------------
             var executor = function(courseid, sections, command, returnurl) {
-                var params = '';
+                var param = '';
 
                 // Check all sections
                 if (command == 'check_all') {
@@ -22,16 +22,17 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                 {
                     // Check for tab moves and extract the tab nr
                     if (command.indexOf('move2tab') > -1) {
-                        params = command.substr(command.length -1);
+                        param = command.substr(8);
                         command = 'move2tab';
                     }
                     // Nnow execute the command with the selected sections
                     console.log('courseID = ' + courseid);
                     console.log('command = ' + command);
+                    console.log('param = ' + param);
                     $.ajax({
                         url: "execute.php",
                         type: "POST",
-                        data: {'courseid': courseid, 'command': command, 'params': params, 'sections': sections},
+                        data: {'courseid': courseid, 'command': command, 'param': param, 'sections': sections},
                         success: function(result) {
                             if(result !== '') {
                                 console.log('Execution result:\n' + result);
