@@ -203,7 +203,7 @@ function add2tab0($courseid, $sections, $tab_nr) {
 function removefromtabs($courseid, $sections) {
     global $DB;
     // remove sectionIDs and section numbers from any tab
-    $sql = "select * from {course_format_options} where courseid = $courseid and (name like 'tab_' or name like 'tab%sectionnums')";
+    $sql = "select * from {course_format_options} where courseid = $courseid and (name like 'tab_' or name like 'tab__' or name like 'tab%sectionnums')";
     $cfos = $DB->get_records_sql($sql);
     foreach($cfos as $cfo) {
         $has_changed = false;
