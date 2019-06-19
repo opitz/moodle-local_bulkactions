@@ -140,6 +140,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             $hidinghint = ($section->visible ? '' : get_string('hidden_hint', 'local_bulkactions'));
             $tablocation = '';
             foreach($cfos as $cfo){
+                $i = 0;
                 if(in_array($section->id, explode(',',$cfo->value))){
                     $i = (int)substr($cfo->name, 3);
                     $tablocation = $fo['tab'.$i.'_title'].($fo['tab'.$i.'_title'] != "Tab $i" && $i>-1 ? " (Tab $i)" : '');
@@ -152,13 +153,13 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             echo html_writer::start_tag('td');
             echo '<input type="checkbox" class="section" value="'.$section->id.'" name="'.$section->section.'"> ';
             echo html_writer::end_tag('td');
-            echo html_writer::start_tag('td');
+            echo html_writer::start_tag('td', array('class' => 'sectionname'));
             echo $sectionname;
             echo html_writer::end_tag('td');
-            echo html_writer::start_tag('td');
+            echo html_writer::start_tag('td', array('class' => 'tablocation', 'value' => $i, 'title' => get_string('tablocation_tooltip', 'local_bulkactions')));
             echo $tablocation;
             echo html_writer::end_tag('td');
-            echo html_writer::start_tag('td');
+            echo html_writer::start_tag('td', array('class' => 'hidinghint'.($section->visible ? '' : ' is_hiding'), 'title' => ($section->visible ? '' : get_string('hidden_tooltip', 'local_bulkactions'))));
             echo $hidinghint;
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');

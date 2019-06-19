@@ -48,6 +48,7 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
                 }
 
             };
+
 // ---------------------------------------------------------------------------------------------------------------------
             var execute = function() {
                 $(".dropdown-item").on('click', function() {
@@ -114,9 +115,10 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
 // ---------------------------------------------------------------------------------------------------------------------
             var checkAll = function() {
                 $("#btn_checkall").on('click', function() {
-                    $('input[class="section"]:not(:checked)').each(function() {
-                        $(this).click();
-                    });
+                    $('input[class="section"]:not(:checked)').click();
+//                    $('input[class="section"]:not(:checked)').each(function() {
+//                        $(this).click();
+//                    });
                 });
             };
 
@@ -130,11 +132,31 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], functi
             };
 
 // ---------------------------------------------------------------------------------------------------------------------
+            var checkSelection = function() {
+                $(".is_hiding").on('click', function(event) {
+                    if (event.altKey) {
+                        $(".is_hiding").parent().find('.section').click();
+                    }
+                });
+
+                $(".tablocation").on('click', function(event) {
+                    var self = $(this);
+                    if (event.altKey) {
+                        console.log(self.attr('value'));
+                        var theVal = self.attr('value');
+//                        alert(theVal);
+                        $(".tablocation[value='" + theVal + "']").parent().find('.section').click();
+                    }
+                });
+            };
+
+// ---------------------------------------------------------------------------------------------------------------------
             var initFunctions = function() {
                 // Load all required functions above
                 execute();
                 checkAll();
                 uncheckAll();
+                checkSelection();
 //                $('.dropdown-toggle').dropdown();
             };
 

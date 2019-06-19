@@ -38,4 +38,6 @@ $string['visib_header'] = 'Visibility';
 $string['hidden_hint'] = '<i>hidden</i>';
 $string['section0_name'] = 'General';
 $string['section_name'] = 'Topic ';
+$string['tablocation_tooltip'] = 'ALT-click to check/uncheck all topics from this tab';
+$string['hidden_tooltip'] = 'ALT-click to check/uncheck all hidden topics';
 $string['gnupf'] = 'Gnupf';
