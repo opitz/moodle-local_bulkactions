@@ -18,6 +18,13 @@ if($command) {
             break;
         case 'hide_sections' :
             $o .= hide_sections($sections);
+            break;
+        case 'show_sections_modules' :
+            $o .= show_sections_modules($sections);
+            break;
+        case 'hide_sections_modules' :
+            $o .= hide_sections_modules($sections);
+            break;
         case 'move2tab' :
             $o .= move2tab($param, $sections);
             break;
@@ -58,6 +65,48 @@ function hide_sections($sections) {
         $o .= "Section Nr $section->section (ID = $section->id) was selected\n";
         $section->visible = 0;
         $DB->update_record('course_sections', $section);
+    }
+
+    return $o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+function show_sections_modules($sections) {
+    global $DB;
+    $o = '';
+    $o .= "show_sections\n";
+    foreach($sections as $section){
+        $o .= "Section Nr $section->section (ID = $section->id) was selected\n";
+        $section->visible = 1;
+        $DB->update_record('course_sections', $section);
+
+        $modules = $DB->get_records('course_modules', array('course' => $section->course, 'section' => $section->id));
+        foreach($modules as $module) {
+            $module->visible = 1;
+            $module->visibleold = 1;
+            $DB->update_record('course_modules', $module);
+        }
+    }
+
+    return $o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+function hide_sections_modules($sections) {
+    global $DB;
+    $o = '';
+    $o .= "hide_sections\n";
+    foreach($sections as $section){
+        $o .= "Section Nr $section->section (ID = $section->id) was selected\n";
+        $section->visible = 0;
+        $DB->update_record('course_sections', $section);
+
+        $modules = $DB->get_records('course_modules', array('course' => $section->course, 'section' => $section->id));
+        foreach($modules as $module) {
+            $module->visible = 0;
+            $module->visibleold = 0;
+            $DB->update_record('course_modules', $module);
+        }
     }
 
     return $o;

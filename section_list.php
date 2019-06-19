@@ -60,8 +60,11 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
         }
     }
 
+    $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
     $commands[] = (object)array('command' => 'hide_sections', 'name' => get_string('hide_sections', 'local_bulkactions'), 'confirm' => get_string('hide_sections_confirm', 'local_bulkactions'));
+    $commands[] = (object)array('command' => 'hide_sections_modules', 'name' => get_string('hide_sections_modules', 'local_bulkactions'), 'confirm' => get_string('hide_sections_modules_confirm', 'local_bulkactions'));
     $commands[] = (object)array('command' => 'show_sections', 'name' => get_string('show_sections', 'local_bulkactions'), 'confirm' => get_string('show_sections_confirm', 'local_bulkactions'));
+    $commands[] = (object)array('command' => 'show_sections_modules', 'name' => get_string('show_sections_modules', 'local_bulkactions'), 'confirm' => get_string('show_sections_modules_confirm', 'local_bulkactions'));
     $commands[] = (object)array('command' => 'delete_sections', 'name' => get_string('delete_sections', 'local_bulkactions'), 'confirm' => get_string('delete_sections_confirm', 'local_bulkactions'));
     $commands[] = (object)array('command' => 'dropdown-divider', 'name' => '', 'confirm' => '');
     $commands[] = (object)array(
