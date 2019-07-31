@@ -24,7 +24,7 @@ $PAGE->requires->js_call_amd('local_bulkactions/execute','init', array());
 echo $OUTPUT->header();
 
 require_login();
-if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context)) {
+if (has_capability('moodle/course:update', $context)) {
 
     $fo_records = $DB->get_records('course_format_options', array('courseid' => $courseid));
     $fo = array();
