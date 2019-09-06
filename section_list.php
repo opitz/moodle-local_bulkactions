@@ -87,8 +87,7 @@ if (has_capability('moodle/course:update', $context)) {
         echo html_writer::start_tag('button', array('type' => 'button', 'id'=>'command', 'class' => 'btn dropdown-toggle btn-primary', 'data-toggle' => 'dropdown'));
         echo get_string('select_action', 'local_bulkactions');
         echo html_writer::end_tag('button');
-
-        echo html_writer::start_tag('div', array('class' => 'dropdown-menu'));
+        echo html_writer::start_tag('div', array('class' => 'bulkactions dropdown-menu'));
         foreach($commands as $command) {
             if($command->command == 'dropdown-divider') {
                 echo html_writer::tag('div', $command->name, array('class' => 'dropdown-divider'));
