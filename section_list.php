@@ -139,6 +139,7 @@ if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context
             $sectionname = ($section->name == '' ? ($section->section == 0 ? get_string('section0_name', 'local_bulkactions') : get_string('section_name', 'local_bulkactions').$section->section) : $section->name);
             $hidinghint = ($section->visible ? '' : get_string('hidden_hint', 'local_bulkactions'));
             $tablocation = '';
+            $i = 0;
             foreach($cfos as $cfo){
                 $i = 0;
                 if(in_array($section->id, explode(',',$cfo->value))){
