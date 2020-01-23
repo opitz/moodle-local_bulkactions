@@ -6,6 +6,12 @@ a.highlight {
     background-color: #fcfcfc;
 }
 
-.dropdown-item {
-    cursor: pointer;
+.bulkactions.dropdown-menu {
+    height: auto;
+    max-height: 80%;
+    overflow-x: hidden;
 }
+
+.bulkactions .dropdown-item {
+     cursor: pointer;
+ }
