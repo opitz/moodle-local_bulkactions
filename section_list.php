@@ -117,12 +117,17 @@ if (has_capability('moodle/course:update', $context)) {
         echo html_writer::start_tag('th');
         echo get_string('checkbox_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
+
         echo html_writer::start_tag('th');
         echo get_string('section_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
-        echo html_writer::start_tag('th');
-        echo get_string('tab_header', 'local_bulkactions');
-        echo html_writer::end_tag('th');
+
+        if(isset($fo[maxtabs])) {
+            echo html_writer::start_tag('th');
+            echo get_string('tab_header', 'local_bulkactions');
+            echo html_writer::end_tag('th');
+        }
+
         echo html_writer::start_tag('th');
         echo get_string('visib_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
@@ -150,18 +155,25 @@ if (has_capability('moodle/course:update', $context)) {
             }
 
             echo html_writer::start_tag('tr');
+
             echo html_writer::start_tag('td');
             echo '<input type="checkbox" class="section" value="'.$section->id.'" name="'.$section->section.'"> ';
             echo html_writer::end_tag('td');
+
             echo html_writer::start_tag('td', array('class' => 'sectionname'));
             echo $sectionname;
             echo html_writer::end_tag('td');
-            echo html_writer::start_tag('td', array('class' => 'tablocation', 'value' => $i, 'title' => get_string('tablocation_tooltip', 'local_bulkactions')));
-            echo $tablocation;
-            echo html_writer::end_tag('td');
+
+            if(isset($fo[maxtabs])) {
+                echo html_writer::start_tag('td', array('class' => 'tablocation', 'value' => $i, 'title' => get_string('tablocation_tooltip', 'local_bulkactions')));
+                echo $tablocation;
+                echo html_writer::end_tag('td');
+            }
+
             echo html_writer::start_tag('td', array('class' => 'hidinghint'.($section->visible ? '' : ' is_hiding'), 'title' => ($section->visible ? '' : get_string('hidden_tooltip', 'local_bulkactions'))));
             echo $hidinghint;
             echo html_writer::end_tag('td');
+
             echo html_writer::end_tag('tr');
         }
 
