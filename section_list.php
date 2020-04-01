@@ -122,7 +122,7 @@ if (has_capability('moodle/course:update', $context)) {
         echo get_string('section_header', 'local_bulkactions');
         echo html_writer::end_tag('th');
 
-        if(isset($fo[maxtabs])) {
+        if(isset($fo['maxtabs'])) {
             echo html_writer::start_tag('th');
             echo get_string('tab_header', 'local_bulkactions');
             echo html_writer::end_tag('th');
@@ -164,7 +164,7 @@ if (has_capability('moodle/course:update', $context)) {
             echo $sectionname;
             echo html_writer::end_tag('td');
 
-            if(isset($fo[maxtabs])) {
+            if(isset($fo['maxtabs'])) {
                 echo html_writer::start_tag('td', array('class' => 'tablocation', 'value' => $i, 'title' => get_string('tablocation_tooltip', 'local_bulkactions')));
                 echo $tablocation;
                 echo html_writer::end_tag('td');
