@@ -17,7 +17,7 @@ $PAGE->set_heading('Bulk Actions');
 $PAGE->set_pagelayout('standard');
 
 //======================================================================================================================
-$PAGE->requires->js_call_amd('local_bulkactions','init', array());
+//$PAGE->requires->js_call_amd('local_bulkactions','init', array());
 echo $OUTPUT->header();
 
 echo "Please chose '".get_string('menu_entry','local_bulkactions')."' from the 'Course administrator' menu to use this feature!";
