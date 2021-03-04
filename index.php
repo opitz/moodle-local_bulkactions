@@ -11,6 +11,7 @@ require_once('../../config.php');
 global $PAGE;
 global $DB;
 
+require_login();
 $PAGE->set_url('/local/bulkactions/view.php', array('id' => $cm->id));
 $PAGE->set_title('Bulk Actions');
 $PAGE->set_heading('Bulk Actions');

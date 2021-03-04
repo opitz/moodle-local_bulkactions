@@ -5,7 +5,7 @@
  * Date: 19/02/01
  */
 global $PAGE;
-$PAGE->requires->js_call_amd('local_bulkactions/bulkactions','init', array());
+//$PAGE->requires->js_call_amd('local_bulkactions/bulkactions','init', array());
 
 
 /*

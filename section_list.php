@@ -10,9 +10,12 @@ global $PAGE;
 global $DB;
 global $COURSE;
 
+require_login();
 $courseid = $_GET['courseid'];
 $context = context_course::instance($courseid);
 $course = $DB->get_record('course', array('id' => $courseid));
+
+$PAGE->set_context($context);
 
 $PAGE->set_url('/local/bulkactions/view.php', array('id' => $courseid));
 $PAGE->set_title($course->fullname.' - Bulk Actions');
@@ -23,7 +26,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->requires->js_call_amd('local_bulkactions/execute','init', array());
 echo $OUTPUT->header();
 
-require_login();
 if (has_capability('moodle/course:update', $context)) {
 
     $fo_records = $DB->get_records('course_format_options', array('courseid' => $courseid));

@@ -1,4 +1,5 @@
 define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events'], function($, str, ModalFactory, ModalEvents) {
+    /* eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
     return {
         init: function() {
 
